@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simple Calculator</title>
+<style>
+* { box-sizing: border-box; 
+    margin: 0; 
+    padding: 0; 
+    font-family: Arial, sans-serif; 
+}
+body { background: #f0f0f0; 
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    height: 100vh; 
+}
+
+.calculator {
+    background: #fff;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    width: 320px;
+}
+.display {
+    background: #222; 
+    color: #0f0; 
+    font-size: 32px;
+    text-align: right; 
+    padding: 20px; 
+    border-radius: 10px;
+    margin-bottom: 20px; 
+    overflow-x: auto;
+}
+.buttons { 
+    display: grid; 
+    grid-template-columns: repeat(4, 1fr); 
+    gap: 15px; 
+}
+button {
+    padding: 20px; 
+    font-size: 24px; 
+    border: none;
+    border-radius: 10px; 
+    cursor: pointer; 
+    transition: 0.2s;
+    background: #333; color: #fff;
+}
+button:hover {
+    background: #555; 
+}
+.operator {
+    background: #f39c12; 
+}
+.operator:hover { 
+    background: #d35400; 
+}
+.equal { 
+    background: #27ae60; 
+    grid-column: span 2; 
+}
+.equal:hover { 
+    background: #1e8449; 
+}
+.clear { 
+    background: #e74c3c; 
+    grid-column: span 2; 
+}
+.clear:hover { 
+    background: #c0392b; 
+}
+</style>
+</head>
+<body>
+
+<div class="calculator">
+  <div class="display" id="display">0</div>
+  <div class="buttons">
+    <button onclick="appendNumber('7')">7</button>
+    <button onclick="appendNumber('8')">8</button>
+    <button onclick="appendNumber('9')">9</button>
+    <button class="operator" onclick="appendOperator('/')">÷</button>
+
+    <button onclick="appendNumber('4')">4</button>
+    <button onclick="appendNumber('5')">5</button>
+    <button onclick="appendNumber('6')">6</button>
+    <button class="operator" onclick="appendOperator('*')">×</button>
+
+    <button onclick="appendNumber('1')">1</button>
+    <button onclick="appendNumber('2')">2</button>
+    <button onclick="appendNumber('3')">3</button>
+    <button class="operator" onclick="appendOperator('-')">−</button>
+
+    <button onclick="appendNumber('0')">0</button>
+    <button onclick="appendDot('.')">.</button>
+    <button class="equal" onclick="calculate()">=</button>
+    <button class="operator" onclick="appendOperator('+')">+</button>
+
+    <button class="clear" onclick="clearDisplay()">C</button>
+  </div>
+</div>
+
+<script>
+let display = document.getElementById('display');
+let currentInput = '';
+
+function updateDisplay() {
+  display.textContent = currentInput || '0';
+}
+
+function appendNumber(number) {
+  currentInput += number;
+  updateDisplay();
+}
+
+function appendOperator(operator) {
+  if (currentInput === '') return;
+  const lastChar = currentInput.slice(-1);
+  if ('+-*/'.includes(lastChar)) {
+    currentInput = currentInput.slice(0, -1) + operator;
+  } else {
+    currentInput += operator;
+  }
+  updateDisplay();
+}
+
+function appendDot(dot) {
+  const parts = currentInput.split(/\+|\-|\*|\//);
+  const lastNumber = parts[parts.length - 1];
+  if (!lastNumber.includes('.')) {
+    currentInput += dot;
+    updateDisplay();
+  }
+}
+
+function clearDisplay() {
+  currentInput = '';
+  updateDisplay();
+}
+
+function calculate() {
+  try {
+    currentInput = eval(currentInput).toString();
+  } catch (e) {
+    currentInput = 'Error';
+  }
+  updateDisplay();
+}
+
+// Bonus: Keyboard support
+window.addEventListener('keydown', function(event) {
+  const key = event.key;
+  if (!isNaN(key)) appendNumber(key);
+  if ('+-*/'.includes(key)) appendOperator(key);
+  if (key === '.') appendDot(key);
+  if (key === 'Enter') calculate();
+  if (key === 'Backspace') {
+    currentInput = currentInput.slice(0, -1);
+    updateDisplay();
+  }
+  if (key === 'Escape') clearDisplay();
+});
+</script>
+
+</body>
+</html>

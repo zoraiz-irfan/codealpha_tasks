@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Responsive Image Gallery</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: Arial, sans-serif; background: #f4f4f4; }
+
+.gallery-container { 
+    max-width: 1200px; margin: 20px auto; padding: 10px; 
+}
+.filter-buttons {
+    text-align: center; margin-bottom: 20px; 
+}
+.filter-buttons button {
+    margin: 5px; padding: 10px 20px; border: none; background: #333; color: #fff; cursor: pointer;
+    transition: background 0.3s;
+}
+.filter-buttons button:hover {
+    background: #555; 
+}
+.image {
+    margin-top: 10px;
+    margin-bottom: 20px;
+}
+
+.gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 15px;
+}
+.gallery-item {
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    transition: transform 0.3s;
+}
+.gallery-item:hover {
+    transform: scale(1.05); 
+}
+.gallery-item img {
+    width: 100%; 
+    height: 100%; 
+    object-fit: cover; 
+    display: block;
+    transition: transform 0.3s;
+}
+
+    /* Lightbox */
+.lightbox {
+    display: none;
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.8);
+    justify-content: center; align-items: center;
+    flex-direction: column;
+    z-index: 1000;
+}
+.lightbox img {
+    max-width: 90%; 
+    max-height: 80vh; 
+    border-radius: 8px;
+}
+.lightbox .close, .lightbox .prev, .lightbox .next {
+    color: white; 
+    font-size: 40px; 
+    position: absolute; 
+    cursor: pointer;
+    user-select: none;
+}
+.lightbox .close {
+    top: 20px; right: 30px; 
+}
+.lightbox .prev {
+    left: 20px;
+    top: 50%; 
+    transform: 
+    translateY(-50%);
+}
+.lightbox .next {
+    right: 20px;
+    top: 50%; 
+    transform: 
+    translateY(-50%); 
+}
+
+@media (max-width: 600px) {
+    .filter-buttons button { 
+    padding: 8px 15px; 
+    font-size: 14px; 
+    }
+}
+  </style>
+</head>
+<body>
+
+<div class="gallery-container">
+  <div class="filter-buttons">
+    <h1 class="image">Image Gallery</h1>
+    <button onclick="filterSelection('all')">All</button>
+    <button onclick="filterSelection('nature')">Nature</button>
+    <button onclick="filterSelection('city')">City</button>
+    <button onclick="filterSelection('animals')">Animals</button>
+  </div>
+
+  <div class="gallery">
+    <div class="gallery-item nature"><img src="https://picsum.photos/id/1015/400/300" alt="Nature 1"></div>
+    <div class="gallery-item nature"><img src="https://picsum.photos/id/1016/400/300" alt="Nature 2"></div>
+    <div class="gallery-item city"><img src="https://picsum.photos/id/1031/400/300" alt="City 1"></div>
+    <div class="gallery-item animals"><img src="https://picsum.photos/id/1025/400/300" alt="Animal 1"></div>
+    <div class="gallery-item city"><img src="https://picsum.photos/id/1033/400/300" alt="City 2"></div>
+    <div class="gallery-item animals"><img src="https://picsum.photos/id/1062/400/300" alt="Animal 2"></div>
+  </div>
+</div>
+
+<div class="lightbox" id="lightbox">
+  <span class="close" onclick="closeLightbox()">&times;</span>
+  <span class="prev" onclick="changeImage(-1)">&#10094;</span>
+  <img id="lightbox-img" src="">
+  <span class="next" onclick="changeImage(1)">&#10095;</span>
+</div>
+
+<script>
+  const galleryItems = document.querySelectorAll('.gallery-item');
+  const lightbox = document.getElementById('lightbox');
+  const lightboxImg = document.getElementById('lightbox-img');
+  let currentIndex = 0;
+
+  galleryItems.forEach((item, index) => {
+    item.addEventListener('click', () => {
+      currentIndex = index;
+      openLightbox(item.querySelector('img').src);
+    });
+  });
+
+  function openLightbox(src) {
+    lightbox.style.display = 'flex';
+    lightboxImg.src = src;
+  }
+
+  function closeLightbox() {
+    lightbox.style.display = 'none';
+  }
+
+  function changeImage(direction) {
+    currentIndex += direction;
+    if (currentIndex < 0) currentIndex = galleryItems.length - 1;
+    if (currentIndex >= galleryItems.length) currentIndex = 0;
+    const newSrc = galleryItems[currentIndex].querySelector('img').src;
+    lightboxImg.src = newSrc;
+  }
+
+  function filterSelection(category) {
+    galleryItems.forEach(item => {
+      item.style.display = (category === 'all' || item.classList.contains(category)) ? 'block' : 'none';
+    });
+  }
+
+  window.addEventListener('keydown', (e) => {
+    if (lightbox.style.display === 'flex') {
+      if (e.key === 'ArrowRight') changeImage(1);
+      if (e.key === 'ArrowLeft') changeImage(-1);
+      if (e.key === 'Escape') closeLightbox();
+    }
+  });
+</script>
+
+</body>
+</html>
